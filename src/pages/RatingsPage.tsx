@@ -57,16 +57,30 @@ export default function RatingsPage() {
       <Typography.Title level={2}>Мои рейтинги</Typography.Title>
       <List
         grid={{ gutter: 16, column: 4 }}
-        dataSource={ratedMovies}
+        dataSource={ratedMovies ?? []}
         renderItem={movie => (
           <List.Item key={movie.movie_id}>
             <Card
               cover={
-                <img
-                  alt={movie.title || 'фильм'}
-                  src={movie.poster_url || 'https://via.placeholder.com/300x450?text=No+Image'}
-                  style={{ height: 300, objectFit: 'cover' }}
-                />
+                <div
+                  style={{
+                    height: 300,
+                    background: '#f0f0f0',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <img
+                    alt={movie.title || 'фильм'}
+                    src={movie.poster_url || 'https://via.placeholder.com/300x450?text=No+Image'}
+                    style={{
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                </div>
               }
               hoverable
             >

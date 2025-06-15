@@ -52,18 +52,33 @@ export default function WatchlistPage() {
       <h2>Список к просмотру</h2>
       <List
         grid={{ gutter: 16, column: 4 }}
-        dataSource={movies}
+        dataSource={movies ?? []}
         renderItem={movie => (
           <List.Item>
             <Card
               cover={
-                <img
-                  alt={movie.title}
-                  src={movie.poster_url}
-                  style={{ height: 300, objectFit: 'cover', cursor: 'pointer' }}
+                <div
+                  style={{
+                    height: 300,
+                    background: '#f0f0f0',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                  }}
                   onClick={() => navigate(`/movies/${movie.movie_id}`)}
-                />
-              }
+                >
+                  <img
+                    alt={movie.title}
+                    src={movie.poster_url}
+                    style={{
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                </div>
+              }              
               actions={[
                 <Button danger onClick={() => removeFromWatchlist(movie.movie_id)}>Удалить</Button>
               ]}

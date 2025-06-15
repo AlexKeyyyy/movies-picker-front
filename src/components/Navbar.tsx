@@ -1,6 +1,14 @@
 import { Menu } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { HomeOutlined, StarOutlined, LoginOutlined, UserAddOutlined, VideoCameraOutlined, LogoutOutlined } from '@ant-design/icons'
+import {
+  HomeOutlined,
+  StarOutlined,
+  LoginOutlined,
+  UserAddOutlined,
+  VideoCameraOutlined,
+  LogoutOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
 import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
@@ -13,6 +21,7 @@ export default function Navbar() {
       ? [
           { key: '/watchlist', icon: <VideoCameraOutlined />, label: 'К просмотру' },
           { key: '/ratings', icon: <StarOutlined />, label: 'Мои оценки' },
+          { key: '/profile/edit', icon: <UserOutlined />, label: 'Профиль' },
           { key: 'logout', icon: <LogoutOutlined />, label: 'Выйти' },
         ]
       : [

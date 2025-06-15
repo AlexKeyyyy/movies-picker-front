@@ -6,6 +6,7 @@ import MoviesPage from './pages/MoviesPage'
 import MovieDetailsPage from './pages/MovieDetailsPage'
 import WatchlistPage from './pages/WatchlistPage'
 import RatingsPage from './pages/RatingsPage'
+import EditProfilePage from './pages/EditProfilePage'
 import Navbar from './components/Navbar'
 import PrivateRoute from './routes/PrivateRoute'
 
@@ -38,6 +39,14 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/profile/edit"
+            element={
+            <PrivateRoute>
+              <EditProfilePage />
+            </PrivateRoute>
+  }
+/>
           <Route path="/" element={<MoviesPage />} />
         </Routes>
       </Content>

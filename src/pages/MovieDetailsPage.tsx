@@ -129,12 +129,20 @@ export default function MovieDetailsPage() {
     <Card
       style={{ maxWidth: 800, margin: '40px auto' }}
       cover={
-        <img
-          alt={movie.title}
-          src={movie.poster_url}
-          style={{ objectFit: 'cover', maxHeight: 500 }}
-        />
-      }
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#f0f2f5' }}>
+          <img
+            alt={movie.title}
+            src={movie.poster_url}
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxHeight: 500,
+              objectFit: 'contain',
+              backgroundColor: '#f0f2f5'
+            }}
+          />
+        </div>
+      }      
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Typography.Title level={3} style={{ margin: 0 }}>

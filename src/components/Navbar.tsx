@@ -1,58 +1,43 @@
-import { Menu, message } from 'antd'
+import { Menu } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import {
-  HomeOutlined,
-  StarOutlined,
-  LoginOutlined,
-  UserAddOutlined,
-  VideoCameraOutlined,
-  LogoutOutlined,
-} from '@ant-design/icons'
+import { HomeOutlined, StarOutlined, LoginOutlined, UserAddOutlined, VideoCameraOutlined, LogoutOutlined } from '@ant-design/icons'
+import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { isAuthenticated, logout } = useAuth()
 
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    setIsLoggedIn(!!token)
-  }, [])
+  const items = [
+    { key: '/', icon: <HomeOutlined />, label: 'Главная' },
+    ...(isAuthenticated
+      ? [
+          { key: '/watchlist', icon: <VideoCameraOutlined />, label: 'К просмотру' },
+          { key: '/ratings', icon: <StarOutlined />, label: 'Мои оценки' },
+          { key: 'logout', icon: <LogoutOutlined />, label: 'Выйти' },
+        ]
+      : [
+          { key: '/login', icon: <LoginOutlined />, label: 'Войти' },
+          { key: '/register', icon: <UserAddOutlined />, label: 'Регистрация' },
+        ]),
+  ]
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    setIsLoggedIn(false)
-    message.success('Вы вышли из системы')
-    navigate('/')
+  const handleClick = ({ key }: { key: string }) => {
+    if (key === 'logout') {
+      logout()
+      navigate('/')
+    } else {
+      navigate(key)
+    }
   }
-
-  const guestItems = [
-    { key: '/', icon: <HomeOutlined />, label: 'Главная' },
-    { key: '/login', icon: <LoginOutlined />, label: 'Войти' },
-    { key: '/register', icon: <UserAddOutlined />, label: 'Регистрация' },
-  ]
-
-  const userItems = [
-    { key: '/', icon: <HomeOutlined />, label: 'Главная' },
-    { key: '/watchlist', icon: <VideoCameraOutlined />, label: 'К просмотру' },
-    { key: '/ratings', icon: <StarOutlined />, label: 'Мои оценки' },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Выйти' },
-  ]
 
   return (
     <Menu
       mode="horizontal"
       theme="dark"
-      onClick={({ key }) => {
-        if (key === 'logout') {
-          handleLogout()
-        } else {
-          navigate(key)
-        }
-      }}
+      onClick={handleClick}
       selectable={false}
       style={{ display: 'flex', justifyContent: 'center' }}
-      items={isLoggedIn ? userItems : guestItems}
+      items={items}
     />
   )
 }

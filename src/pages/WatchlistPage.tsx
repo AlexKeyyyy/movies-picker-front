@@ -18,11 +18,13 @@ export default function WatchlistPage() {
   const fetchWatchlist = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await axios.get('/api/watchlist', {
+      const res = await axios.get('/api/users/me/watchlist', {
         headers: { Authorization: `Bearer ${token}` }
       })
+      console.log('WatchList from server: ', res);
       setMovies(res.data)
-    } catch {
+    } catch (err) {
+      console.error(err)
       message.error('Ошибка загрузки списка просмотра')
     }
   }
@@ -30,12 +32,13 @@ export default function WatchlistPage() {
   const removeFromWatchlist = async (movieId: number) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`/api/watchlist/${movieId}`, {
+      await axios.delete(`/api/users/me/watchlist/${movieId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setMovies(prev => prev.filter(m => m.movie_id !== movieId))
       message.success('Фильм удалён из списка')
-    } catch {
+    } catch (err) {
+      console.error(err)
       message.error('Не удалось удалить фильм')
     }
   }
@@ -53,12 +56,20 @@ export default function WatchlistPage() {
         renderItem={movie => (
           <List.Item>
             <Card
-              cover={<img alt={movie.title} src={movie.poster_url} style={{ height: 300, objectFit: 'cover' }} />}
-              actions={[<Button danger onClick={() => removeFromWatchlist(movie.movie_id)}>Удалить</Button>]}
-              onClick={() => navigate(`/movies/${movie.movie_id}`)}
+              cover={
+                <img
+                  alt={movie.title}
+                  src={movie.poster_url}
+                  style={{ height: 300, objectFit: 'cover', cursor: 'pointer' }}
+                  onClick={() => navigate(`/movies/${movie.movie_id}`)}
+                />
+              }
+              actions={[
+                <Button danger onClick={() => removeFromWatchlist(movie.movie_id)}>Удалить</Button>
+              ]}
               hoverable
             >
-              <Card.Meta title={`${movie.title} (${movie.year})`} description={movie.description} />
+              <Card.Meta title={`${movie.title}`} description={movie.description} />
             </Card>
           </List.Item>
         )}

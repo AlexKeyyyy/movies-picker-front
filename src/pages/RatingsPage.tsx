@@ -4,45 +4,80 @@ import axios from 'axios'
 
 interface RatedMovie {
   movie_id: number
-  title: string
-  year: number
-  poster_url: string
   rating: number
+  rated_at: string
+  // после дозагрузки
+  title?: string
+  year?: number
+  poster_url?: string
 }
 
 export default function RatingsPage() {
   const [ratedMovies, setRatedMovies] = useState<RatedMovie[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchRatings = async () => {
+    const fetchRatingsAndDetails = async () => {
       try {
         const token = localStorage.getItem('token')
-        const res = await axios.get('/api/ratings', {
+        if (!token) {
+          message.error('Пользователь не авторизован')
+          return
+        }
+        const { data: ratings } = await axios.get('/api/users/me/ratings', {
           headers: { Authorization: `Bearer ${token}` }
         })
-        setRatedMovies(res.data)
+
+        // Параллельно запросить данные фильмов
+        const movieDetailsPromises = ratings.map((r: RatedMovie) =>
+          axios.get(`/api/movies/${r.movie_id}`).then(res => res.data)
+        )
+        const moviesDetails = await Promise.all(movieDetailsPromises)
+
+        // Объединяем рейтинги и детали
+        const merged = ratings.map((r: RatedMovie) => {
+          const details = moviesDetails.find((m: any) => m.movie_id === r.movie_id)
+          return { ...r, ...details }
+        })
+
+        setRatedMovies(merged)
       } catch {
         message.error('Ошибка загрузки рейтингов')
+      } finally {
+        setLoading(false)
       }
     }
-    fetchRatings()
+    fetchRatingsAndDetails()
   }, [])
+
+  if (loading) return <div>Загрузка...</div>
 
   return (
     <div style={{ padding: 24 }}>
-      <h2>Мои рейтинги</h2>
+      <Typography.Title level={2}>Мои рейтинги</Typography.Title>
       <List
         grid={{ gutter: 16, column: 4 }}
         dataSource={ratedMovies}
         renderItem={movie => (
-          <List.Item>
+          <List.Item key={movie.movie_id}>
             <Card
-              cover={<img alt={movie.title} src={movie.poster_url} style={{ height: 300, objectFit: 'cover' }} />}
+              cover={
+                <img
+                  alt={movie.title || 'фильм'}
+                  src={movie.poster_url || 'https://via.placeholder.com/300x450?text=No+Image'}
+                  style={{ height: 300, objectFit: 'cover' }}
+                />
+              }
               hoverable
             >
               <Card.Meta
-                title={`${movie.title} (${movie.year})`}
-                description={<><Rate disabled defaultValue={movie.rating} /> <Typography.Text>({movie.rating})</Typography.Text></>}
+                title={`${movie.title || 'Без названия'} (${movie.year || '—'})`}
+                description={
+                  <>
+                    <Rate disabled value={movie.rating} />{' '}
+                    <Typography.Text>({movie.rating})</Typography.Text>
+                  </>
+                }
               />
             </Card>
           </List.Item>

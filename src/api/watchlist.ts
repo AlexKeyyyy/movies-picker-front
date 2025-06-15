@@ -1,10 +1,29 @@
-import api from './client'
-import { Movie } from './movies'
+import { getUserIdFromToken } from '../utils/getUserIdFromToken'
+import axios from 'axios'
 
-export const getWatchlist = () => api.get<Movie[]>('/watchlist')
+const api = axios.create({
+  baseURL: '/api',
+})
 
-export const addToWatchlist = (movieId: number) =>
-  api.post('/watchlist', { movie_id: movieId })
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
 
-export const removeFromWatchlist = (movieId: number) =>
-  api.delete(`/watchlist/${movieId}`)
+export const getWatchlist = () => {
+  const userId = getUserIdFromToken()
+  return api.get(`/users/${userId}/watchlist`)
+}
+
+export const addToWatchlist = (movieId: number) => {
+  const userId = getUserIdFromToken()
+  return api.post(`/users/${userId}/watchlist`, { movie_id: movieId })
+}
+
+export const removeFromWatchlist = (movieId: number) => {
+  const userId = getUserIdFromToken()
+  return api.delete(`/users/${userId}/watchlist/${movieId}`)
+}

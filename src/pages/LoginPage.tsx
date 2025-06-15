@@ -1,13 +1,16 @@
 import { Button, Card, Form, Input, Typography, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import axios from 'axios'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const onFinish = async (values: any) => {
     try {
       const res = await axios.post('/api/auth/login', values)
+      login(res.data.access_token)
       localStorage.setItem('token', res.data.access_token)
       message.success('Успешный вход')
       navigate('/')
